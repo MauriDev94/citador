@@ -1,0 +1,44 @@
+# === Secretos y entornos — NUNCA versionados ===
+.env
+.env.*
+!.env.example
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+
+# NOTA: uv.lock SÍ se versiona — es la reproducibilidad del entorno.
+
+# === Tests y calidad ===
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# === Build ===
+build/
+dist/
+*.egg-info/
+
+# === Herramientas locales ===
+.claude/settings.local.json
+.idea/
+.vscode/
+*.swp
+
+# === Sistema operativo ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Logs y temporales ===
+*.log
+tmp/

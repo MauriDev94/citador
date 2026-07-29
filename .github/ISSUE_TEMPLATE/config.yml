@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Arquitectura y puesta en marcha
+    url: https://github.com/MauriDev94/citador#readme
+    about: Revisá el README (arquitectura, capas, cómo levantar el stack) antes de abrir un issue.
