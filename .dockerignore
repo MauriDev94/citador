@@ -1,0 +1,37 @@
+# Todo lo que NO debe entrar al contexto de build.
+# Un contexto chico = builds rápidos y menos superficie de fuga.
+
+# === Secretos — jamás dentro de una imagen ===
+.env
+.env.*
+
+# === Control de versiones y CI ===
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# === Entornos virtuales (se reinstalan en el builder) ===
+.venv/
+venv/
+
+# === Caches ===
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# === Herramientas locales ===
+.claude/
+.idea/
+.vscode/
+
+# === Docs (salvo el README) ===
+docs/
+*.md
+!README.md

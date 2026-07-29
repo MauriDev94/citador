@@ -1,0 +1,14 @@
+# Normaliza finales de línea: LF en el repositorio, siempre.
+# Sin esto, en Windows Git commitea CRLF y los scripts se rompen dentro
+# de los contenedores Linux (`/bin/sh^M: bad interpreter`).
+* text=auto eol=lf
+
+# Binarios: nunca tocar sus bytes.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
