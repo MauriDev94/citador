@@ -1,0 +1,63 @@
+[project]
+name = "citador"
+version = "0.1.0"
+description = "Asistente RAG de documentación técnica con citas obligatorias"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.52.0",
+]
+
+# ─────────────────────────────────────────────
+# ruff — linter Y formateador (reemplaza flake8, isort, black)
+# ─────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle: errores de estilo
+    "F",    # pyflakes: imports sin usar, variables no definidas
+    "I",    # isort: orden de imports
+    "UP",   # pyupgrade: sintaxis moderna de Python
+    "B",    # flake8-bugbear: trampas comunes que no son errores de sintaxis
+    "SIM",  # flake8-simplify: código que se puede escribir más simple
+    "RUF",  # reglas propias de ruff
+]
+
+# ─────────────────────────────────────────────
+# mypy — verificación estática de tipos
+# ─────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+
+# ─────────────────────────────────────────────
+# pytest
+# ─────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"
+markers = [
+    "integration: tests que requieren servicios externos (DB, red)",
+]
+
+[tool.coverage.run]
+source = ["app"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.9.1",
+    "mypy>=2.3.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.1",
+]
