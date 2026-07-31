@@ -10,7 +10,7 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never
 
-WORKDIR /build
+WORKDIR /app
 
 # PRIMERO el manifiesto: esta capa se cachea mientras no cambien las deps
 COPY pyproject.toml uv.lock ./
@@ -27,7 +27,7 @@ RUN groupadd --system citador \
 WORKDIR /app
 
 # El entorno ya construido, sin uv ni herramientas de build
-COPY --from=builder --chown=citador:citador /build/.venv /app/.venv
+COPY --from=builder --chown=citador:citador /app/.venv /app/.venv
 # DESPUÉS el código: es lo que más cambia, va en la última capa
 COPY --chown=citador:citador app/ /app/app/
 
