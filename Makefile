@@ -1,4 +1,4 @@
-.PHONY: help install lint format typecheck test test-cov check run docker-build docker-run
+.PHONY: help install db-up db-down migrate migrate-test migrate-check lint format typecheck test test-cov check run docker-build docker-run
 
 # Carga .env si existe, para tener PORT y demás variables
 -include .env
@@ -12,6 +12,21 @@ help:  ## Muestra los comandos disponibles
 
 install:  ## Sincroniza el entorno con el lockfile
 	uv sync --frozen
+
+db-up:  ## Levanta las bases de desarrollo y de test y espera a que estén sanas
+	docker compose up -d --wait db db-test
+
+db-down:  ## Detiene las bases (el volumen de desarrollo se conserva)
+	docker compose down
+
+migrate:  ## Aplica las migraciones a la base de desarrollo
+	$(PY) -m alembic upgrade head
+
+migrate-test:  ## Aplica las migraciones a la base de test
+	DATABASE_URL="$(TEST_DATABASE_URL)" $(PY) -m alembic upgrade head
+
+migrate-check:  ## Detecta modelos sin migración (requiere modelos: útil desde el chip 1.4)
+	$(PY) -m alembic check
 
 lint:  ## Revisa el código con ruff
 	$(PY) -m ruff check .
