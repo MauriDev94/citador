@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Asistente RAG de documentación técnica con citas obligatorias"
 requires-python = ">=3.13"
 dependencies = [
+    "alembic>=1.19.0",
+    "asyncpg>=0.31.0",
     "fastapi>=0.141.1",
+    "sqlalchemy[asyncio]>=2.0.51",
     "uvicorn[standard]>=0.52.0",
 ]
 
