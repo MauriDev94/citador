@@ -51,9 +51,17 @@ markers = [
 
 [tool.coverage.run]
 source = ["app"]
+# Cobertura de RAMA, no de línea. La de línea miente: un test que recorre un
+# `if` sin probar la rama falsa reporta 100% de línea y 50% de rama.
+branch = true
 
 [tool.coverage.report]
-fail_under = 80
+# Medido en CI con la suite completa y `branch = true`: 100%. El umbral del
+# estándar es 85 y se deja ahí a propósito — `fail_under` es un piso, no una
+# meta. Fijarlo en 100 haría que cualquier rama nueva sin cubrir rompa el CI,
+# lo que en un proyecto que recién arranca empuja a escribir tests para el
+# número en vez de para el código.
+fail_under = 85
 show_missing = true
 
 [dependency-groups]

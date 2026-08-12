@@ -1,0 +1,63 @@
+# La declaración de calidad de este proyecto.
+#
+# Un solo lugar declara los gates. Tres puertas los invocan:
+#   make check                    entrada humana
+#   python .harness/verify.py     entrada del agente (hooks)
+#   .github/workflows/ci.yml      entrada automatizada
+#
+# Si editas esto, las tres cambian juntas. Ese es el punto.
+
+[project]
+name = "citador"
+stack = "python"
+
+[[gate]]
+id = "format"
+description = "formato (ruff)"
+cmd = "ruff format --check app tests"
+file_cmd = "ruff format --check {file}"
+file_ext = [".py", ".pyi"]
+fatal = false
+
+[[gate]]
+id = "lint"
+description = "lint (ruff)"
+cmd = "ruff check app tests"
+file_cmd = "ruff check {file}"
+file_ext = [".py", ".pyi"]
+fatal = true
+
+# mypy y no dmypy a propósito: un gate tiene que ser reproducible desde cero y
+# el daemon depende de estado invisible. Para el ciclo corto está
+# `make typecheck-fast`, que es un atajo declarado, no la verdad.
+[[gate]]
+id = "types"
+description = "tipos (mypy)"
+cmd = "mypy app"
+file_cmd = "mypy {file}"
+file_ext = [".py", ".pyi"]
+fatal = true
+
+# Unitarios: sin servicios externos, corren en cualquier momento y en cualquier
+# máquina. Comillas DOBLES en cadena literal de TOML porque cmd.exe parte
+# `not integration` en dos argumentos si se usan comillas simples.
+[[gate]]
+id = "tests"
+description = "tests unitarios"
+cmd = 'pytest -q -m "not integration"'
+fatal = true
+
+# La suite completa con cobertura sólo donde hay Postgres con pgvector.
+#
+# Deliberadamente NO se mide cobertura en el gate anterior: los unitarios solos
+# dan 66% de rama, contra un umbral pensado para la suite entera. Un gate que
+# mide una parte contra el umbral del todo miente en las dos direcciones.
+#
+# `when = ["ci"]` y no `["push", "ci"]`: un push no debería bloquearse porque
+# Docker Desktop está apagado. Si prefieres esa exigencia, agrega "push".
+[[gate]]
+id = "tests-integration"
+description = "suite completa + cobertura de rama"
+cmd = "pytest -q --cov=app --cov-branch --cov-report=term-missing"
+when = ["ci"]
+fatal = true
