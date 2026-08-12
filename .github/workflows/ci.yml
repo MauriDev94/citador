@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    # Los tests marcados `integration` necesitan Postgres con pgvector. El
+    # runner lo levanta acá; en local es `make db-up`.
+    services:
+      db-test:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: citador
+          POSTGRES_PASSWORD: changeme
+          POSTGRES_DB: citador_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      # El puerto es 5432 y no 5433 como en docker-compose: acá no hay que
+      # esquivar una base de desarrollo. La URL se lee del entorno justamente
+      # para que este archivo no dependa de la config local.
+      TEST_DATABASE_URL: postgresql+asyncpg://citador:changeme@localhost:5432/citador_test
+      DATABASE_URL: postgresql+asyncpg://citador:changeme@localhost:5432/citador_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sincronizar entorno
+        run: uv sync --all-groups
+
+      - name: Migrar la base de test
+        run: uv run alembic upgrade head
+
+      # El mismo comando que corre `make check` en local y los hooks de los
+      # agentes. Los gates no se re-declaran acá: viven en .harness/verify.toml.
+      # `--when ci` incluye la suite completa con cobertura, que sólo puede
+      # correr donde hay servicios.
+      - name: Puerta de calidad
+        run: uv run python .harness/verify.py --root . --when ci
