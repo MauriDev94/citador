@@ -504,7 +504,11 @@ ICONS = {"passed": "OK  ", "failed": "FAIL", "skipped": "--  "}
 
 
 def render_human(
-    config: Config, results: list[GateResult], file: str | None, when: str | None = None
+    config: Config,
+    results: list[GateResult],
+    file: str | None,
+    when: str | None = None,
+    verbose: bool = False,
 ) -> str:
     scope = f"archivo {file}" if file else "proyecto"
     moment = f" | momento {when}" if when else ""
@@ -523,7 +527,7 @@ def render_human(
             continue
         flag = "" if gate.fatal else "  [no bloqueante]"
         lines.append(f"{head}  {result.duration_ms}ms{flag}")
-        if result.status == "failed" and result.output:
+        if result.output and (result.status == "failed" or verbose):
             lines.extend(f"      {line}" for line in result.output.splitlines())
 
     failed = [r for r in results if r.status == "failed"]
@@ -610,6 +614,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--only",
         help="correr sólo estos gates, separados por coma (ej: lint,types)",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help=(
+            "mostrar también la salida de los gates que pasan. Un gate de "
+            "cobertura que pasa igual esconde el número, que suele ser el dato "
+            "que se necesita"
+        ),
     )
     parser.add_argument(
         "--when",
@@ -720,7 +733,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(render_json(config, results, file_arg, args.when))
     else:
-        print(render_human(config, results, file_arg, args.when), file=sys.stderr)
+        print(
+            render_human(config, results, file_arg, args.when, args.verbose),
+            file=sys.stderr,
+        )
 
     return exit_code(results)
 

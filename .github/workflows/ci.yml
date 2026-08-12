@@ -49,7 +49,7 @@ jobs:
 
       # El mismo comando que corre `make check` en local y los hooks de los
       # agentes. Los gates no se re-declaran acá: viven en .harness/verify.toml.
-      # `--when ci` incluye la suite completa con cobertura, que sólo puede
+      # `--when ci --verbose` incluye la suite completa con cobertura, que sólo puede
       # correr donde hay servicios.
       - name: Puerta de calidad
-        run: uv run python .harness/verify.py --root . --when ci
+        run: uv run python .harness/verify.py --root . --when ci --verbose
