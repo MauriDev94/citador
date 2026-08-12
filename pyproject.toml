@@ -56,11 +56,12 @@ source = ["app"]
 branch = true
 
 [tool.coverage.report]
-# Ojo: este 80 venía de medir LÍNEA. Con `branch = true` el número real baja y
-# todavía no está medido — la suite completa necesita Postgres. El primer run
-# del CI lo va a decir; ajustar entonces con el dato, no antes.
-# El estándar del harness apunta a 85 de rama.
-fail_under = 80
+# Medido en CI con la suite completa y `branch = true`: 100%. El umbral del
+# estándar es 85 y se deja ahí a propósito — `fail_under` es un piso, no una
+# meta. Fijarlo en 100 haría que cualquier rama nueva sin cubrir rompa el CI,
+# lo que en un proyecto que recién arranca empuja a escribir tests para el
+# número en vez de para el código.
+fail_under = 85
 show_missing = true
 
 [dependency-groups]
